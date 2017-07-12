@@ -1,0 +1,19 @@
+{
+    "extensions": [{
+        "type": "@Application",
+        "name": "frontend",
+        "className": "CTRL.FrotnendApplication"
+    }],
+    "dependencies": [
+        "common",
+        "ui",
+        "devicefront",
+        "settings"
+    ],
+    "scripts": [
+        "MainView.js",
+        "App.js"
+    ],
+    "resources": [
+    ]
+}

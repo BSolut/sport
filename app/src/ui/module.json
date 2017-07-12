@@ -1,0 +1,45 @@
+{
+    "extensions": [
+    ],
+    "dependencies": [
+    ],
+    "scripts": [
+        "DomExtension.js",
+        "UIString.js",
+        "UIUtils.js",
+        "Geometry.js",
+        "Widget.js",
+        "RootView.js",
+        "SplitWidget.js",
+        "Panel.js",
+        "TabbedPane.js",
+        "SidebarPane.js",
+        "ResizerWidget.js",
+        "ZoomManager.js",
+        "Dialog.js",
+        "UIList.js",
+        "Toolbar.js",
+        "DropDownMenu.js",
+        "ReportView.js",
+        "ViewportControl.js",
+        "TextPrompt.js",
+        "SuggestBox.js",
+        "KeyboardShortcut.js",
+        "HelpScreen.js"
+    ],
+    "resources": [
+        "common.css",
+        "splitWidget.css",
+        "uiList.css",
+        "toolbar.css",
+        "smallIcon.css",
+        "closeButton.css",
+        "tabbedPane.css",
+        "reportView.css",
+        "textButton.css",
+        "textPrompt.css",
+        "suggestBox.css",
+        "helpScreen.css",
+        "checkboxTextLabel.css"
+    ]
+}

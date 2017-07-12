@@ -1,0 +1,31 @@
+{
+   "app": {
+      "background": {
+         "persistent": false,
+         "page": "src/background.html"
+      }
+   },
+   "default_locale": "en",
+   "description": "__MSG_ext_description__",
+   "name": "__MSG_ext_name__",
+   "icons": {
+      "128": "images/icon_128.png"
+   },
+   "manifest_version": 2,
+   "minimum_chrome_version": "41",
+   "offline_enabled": true,
+   "sockets": {
+      "tcp": {
+         "connect": "*"
+      },
+      "tcpServer": {
+         "listen": "*"
+      }
+   },
+   "permissions": [
+      "serial",
+      "usb",
+      "storage"
+   ],
+   "version": "0.5.0"
+}

@@ -1,0 +1,10 @@
+{
+    "ext_description": {
+        "description": "Description of the extension.",
+        "message": "Serial port to websocket wrapper"
+    },
+    "ext_name": {
+        "description": "Name of the extension.",
+        "message": "SPort"
+    }
+}

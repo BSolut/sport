@@ -1,0 +1,2 @@
+CTRL.Frontend = function() {
+}

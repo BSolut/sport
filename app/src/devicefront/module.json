@@ -1,0 +1,31 @@
+{
+    "extensions": [
+        {
+            "type": "setting",
+            "category": "Console",
+            "title": "Default send mode:",
+            "settingName": "devSendMode",
+            "settingType": "enum",
+            "defaultValue": "original",
+            "options": [
+                ["Both NL & CR", 3],
+                ["New line", 1, true],
+                ["Carriage return", 2, true],
+                ["No line ending", 0, true]
+            ]
+        }
+    ],
+    "dependencies": [
+        "common",
+        "ui"
+    ],
+    "scripts": [
+        "DeviceList.js",
+        "DeviceView.js",
+        "DeviceConsoleView.js",
+        "ConsoleViewMessage.js"
+    ],
+    "resources": [
+        "consoleView.css"
+    ]
+}

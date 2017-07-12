@@ -1,0 +1,16 @@
+{
+    "extensions": [
+        {
+            "type": "@CTRL.SettingsUIport",
+            "className": "CTRL.SettingsUIPort"
+        }
+    ],
+    "dependencies": [
+        "ui"
+    ],
+    "scripts": [
+        "SettingsUI.js",
+        "SettingsTypes.js",
+        "SettingsScreen.js"
+    ]
+}

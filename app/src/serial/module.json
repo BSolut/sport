@@ -1,0 +1,12 @@
+{
+    "extensions": [
+    ],
+    "dependencies": [
+    	"common"
+    ],
+    "scripts": [
+        "ExtSerial.js"
+    ],
+    "resources": [
+    ]
+}

@@ -1,0 +1,2 @@
+CTRL.DeviceConnectPanel = function() {
+}

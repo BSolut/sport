@@ -1,0 +1,15 @@
+{
+    "extensions": [
+    ],
+    "dependencies": [
+    ],
+    "scripts": [
+        "Ctrl.js",
+        "Object.js",
+        "utilities.js",
+        "Throttler.js",
+        "Settings.js"
+    ],
+    "resources": [
+    ]
+}

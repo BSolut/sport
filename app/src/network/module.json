@@ -1,0 +1,28 @@
+{
+    "extensions": [
+        {
+            "type": "setting",
+            "category": "Network",
+            "title": "Disable Server",
+            "settingName": "srvDisabled",
+            "settingType": "boolean",
+            "defaultValue": false
+        },
+        {
+            "type": "setting",
+            "category": "Network",
+            "title": "Server Port",
+            "settingName": "srvPort",
+            "settingType": "port",
+            "defaultValue": 8889
+        }
+    ],
+    "dependencies": [
+    ],
+    "scripts": [
+        "sha1.js",
+        "Http.js"
+    ],
+    "resources": [
+    ]
+}

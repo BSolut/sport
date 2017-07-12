@@ -1,0 +1,10 @@
+[
+	{ "name": "common" },
+	{ "name": "network" },
+	{ "name": "serial" },
+	{ "name": "ui" },
+	{ "name": "devicefront" },
+	{ "name": "settings" },
+	{ "name": "frontend" },
+    { "name": "background" }    
+]

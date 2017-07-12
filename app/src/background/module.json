@@ -1,0 +1,20 @@
+{
+    "extensions": [
+        {
+            "type": "@Application",
+            "name": "background",
+            "className": "CTRL.BackgroundApplication"
+        }        
+    ],
+    "dependencies": [
+    	"common",
+        "network",
+        "serial"
+    ],
+    "scripts": [
+        "ChromeAppInterface.js",
+        "Main.js"
+    ],
+    "resources": [
+    ]
+}
