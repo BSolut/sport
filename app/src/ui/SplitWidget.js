@@ -20,7 +20,6 @@ CTRL.SplitWidget = function(isVertical, secondIsSidebar, settingName, defaultSid
     this._defaultSidebarWidth = defaultSidebarWidth || 200;
     this._defaultSidebarHeight = defaultSidebarHeight || this._defaultSidebarWidth;
     this._constraintsInDip = !!constraintsInDip;
-    //TODO this._setting = settingName ? CTRL.settings.createSetting(settingName, {}) : null;
 
     this.setSecondIsSidebar(secondIsSidebar);
 
