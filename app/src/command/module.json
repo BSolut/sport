@@ -1,0 +1,17 @@
+{
+    "extensions": [
+        {
+            "type": "@CTRL.CommandHandler",
+            "className": "CTRL.JsonHandler"
+        }
+    ],
+    "dependencies": [
+        "common",
+        "serial"
+    ],
+    "scripts": [
+        "JsonHandler.js"
+    ],
+    "resources": [
+    ]
+}

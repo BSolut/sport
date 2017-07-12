@@ -1,5 +1,6 @@
 [
 	{ "name": "common" },
+	{ "name": "command" },
 	{ "name": "network" },
 	{ "name": "serial" },
 	{ "name": "ui" },

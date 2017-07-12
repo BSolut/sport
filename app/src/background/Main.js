@@ -19,12 +19,22 @@ CTRL.Background.prototype = {
 		CTRL.settings.load().then(this.run.bind(this))
 	},
 
+
+	registerHandler: function(extensions, handler) {
+		this.cmdHandler.push(handler);
+	},
+
+	loadHandler: function() {
+		var extensions = self.runtime.extensions("@CTRL.CommandHandler"),
+			ext, i = 0,
+			promies = [];
+		while(ext = extensions[i++]) 
+			promies.push( ext.instancePromise().then(this.registerHandler.bind(this, ext)) );
+		return Promise.all(promies);
+	},
+
 	run: function() {
-		//todo config runtime list ??
-		this.cmdHandler = [
-			//new CTRL.JsonHandler()
-		];
-		return this.startServer();
+		this.loadHandler().then(this.startServer.bind(this));
 	},
 
 	onSettingChanged: function(cData) {
