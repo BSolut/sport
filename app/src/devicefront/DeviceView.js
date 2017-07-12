@@ -1,7 +1,6 @@
 CTRL.DeviceView = function(devInfo) {
 	CTRL.VBox.call(this);
 	this.devInfo = devInfo;
-    this.defaultSpeeds = [115200,57600,38400,19200,14400,9600,4800,2400,1200,300,110];
 
     this._tabbedPane = new CTRL.TabbedPane();
     this._tabbedPane.appendTab('connect', CTRL.UIString('Connection'), this._getConnectInfoPanel());
@@ -21,20 +20,7 @@ CTRL.DeviceView = function(devInfo) {
 
     this.bindEvents();
 
-
     var cv = this._consoleView;
-
-
-    /*var idx = 0, data = ['\n', 'ha', 'l', 'lo\nH','UR','Z'],
-        toSend;
-    //while(toSend = data[idx++])
-    //    cv.addReceiveMessage(toSend);
-    (function sendNext() {
-        var toSend = data[idx++];
-        if(!toSend)return;
-        cv.addReceiveMessage(toSend);
-        setTimeout(sendNext, 1000);
-    })()*/
 }
 
 CTRL.DeviceView.Events = {
@@ -42,7 +28,7 @@ CTRL.DeviceView.Events = {
 }
 
 CTRL.DeviceView.prototype = {
-	__proto__: CTRL.VBox.prototype,
+    __proto__: CTRL.VBox.prototype,
 
     isConnected: function()
     {
@@ -94,89 +80,25 @@ CTRL.DeviceView.prototype = {
 
     },
 
-    _createSelect: function(name, values, owner)
-    {
-        owner.removeChildren();
-        var ret = owner.createChild('select')
-        ret.innerHTML = values.map(function(a,b) {return (b||'') + '<option>'+a+'</option>';});
-        return ret;
-    },
-
     _getConnectInfoPanel: function()
     {
         if(this._conInfoPanel)
             return this._conInfoPanel;
-
-        var reportView = new CTRL.ReportView('Device '+this.devInfo.path)
-
-        var s = reportView.appendSection('Main');
-        s.appendField('bitrate', '');
-
-        s = reportView.appendSection('Extended', undefined, true);
-        s.appendField('DataBits');
-        s.appendField('ParityBit');
-        s.appendField('StopBits');
-        var cfgFlowControl = s.appendField('FlowControl').createChild('input');
-        cfgFlowControl.type = 'checkbox';
-
-        s = reportView.appendSection();
-
-        var that = this;
-        s.element.appendChild(
-            createTextButton("", this._onDeviceConnectExecute.bind(this), 'device-connect-btn')
-        );
-
-        return this._conInfoPanel = reportView;
+        var panel = this._conInfoPanel = new CTRL.DeviceConnectPanel(this.devInfo);
+        panel.addEventListener(CTRL.DeviceConnectPanel.Events.Action, this._onDeviceConnectExecute.bind(this));
+        return panel;
     },
 
     _updateConnectionInfo: function()
     {
-        var devInfo = this.devInfo,
-            conInfo = devInfo.connectionInfo,
-            reportView = this._getConnectInfoPanel();
-
-        if(!conInfo || !conInfo.connectionId) {
-
-            var cfgFields = {};
-
-            cfgFields.bitrate = this._createSelect('bitrate', this.defaultSpeeds, reportView.getSection('Main').fieldValue('bitrate'));
-            var extSection = reportView.getSection('Extended');
-            cfgFields.dataBits = this._createSelect('dataBits', ['eight', 'seven'], extSection.fieldValue('DataBits'));
-            cfgFields.parityBit = this._createSelect('parityBit', ['no', 'odd', 'even'], extSection.fieldValue('ParityBit'));
-            cfgFields.stopBits = this._createSelect('stopBits', ['one', 'two'], extSection.fieldValue('StopBits'));
-            cfgFields.flowControl = extSection.fieldValue('FlowControl').firstChild;
-            cfgFields.flowControl.checked = false;
-
-            var textBtn = reportView.getSection().element.lastChild;
-            textBtn.textContent = 'Connect';
-
-            reportView.cfgFields = cfgFields;
-        } else {
-            reportView.getSection('Main').fieldValue('bitrate', conInfo.bitrate);
-            var extSection = reportView.getSection('Extended');
-            extSection.fieldValue('DataBits', conInfo.dataBits);
-            extSection.fieldValue('ParityBit', conInfo.parityBit);
-            extSection.fieldValue('StopBits', conInfo.stopBits);
-            extSection.fieldValue('FlowControl').lastChild.checked = conInfo.ctsFlowControl;
-
-            var textBtn = reportView.getSection().element.lastChild;
-            textBtn.textContent = 'Disconnect';
-        }
+        this._getConnectInfoPanel().update( this.devInfo );
     },
 
     _onDeviceConnectExecute: function()
     {
         if(!this.isConnected()){
-            var cfg = this._getConnectInfoPanel().cfgFields;
-
-            CTRL.Serial.connect(this.devInfo.path, {
-                bitrate: parseInt(cfg.bitrate.value),
-                dataBits: cfg.dataBits.value,
-                parityBit: cfg.parityBit.value,
-                stopBits: cfg.stopBits.value,
-                ctsFlowControl: cfg.flowControl.checked
-            });
-
+            var cfg = this._getConnectInfoPanel().getConfig();
+            CTRL.Serial.connect(this.devInfo.path, cfg);
         } else {
             CTRL.Serial.disconnect(this.devInfo.connectionInfo.connectionId);
         }

@@ -21,6 +21,7 @@
     ],
     "scripts": [
         "DeviceList.js",
+        "DeviceConnectPanel.js",
         "DeviceView.js",
         "DeviceConsoleView.js",
         "ConsoleViewMessage.js"
