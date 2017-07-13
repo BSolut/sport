@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <script type='text/javascript' src='../lib/clientserial.js'></script>
+</head>
+<body>
+
+
+<script type="text/javascript">
+
+var siface = new Serial.Interface(),
+	connection;
+siface.connectToServer(function(e, server) {
+	console.log('Connected server version ', siface.serverVersion);
+
+
+	siface.connect('/dev/ttyUSB0', {
+		bitrate: 115200
+	}, function(err, sCon){
+		if(err)		
+			return console.error(err);
+
+		sCon.addEventListener('disconnect', function(ev){
+			console.log('###disconnect', ev);
+		})
+
+		sCon.addEventListener('receive', function(ev){
+			var str = String.fromCharCode.apply(null, ev.data);
+			console.log(str);
+		})
+	})
+
+
+	/*
+	connection = new Serial.Connection(siface);
+
+	/*siface.getDevices(function(err, list){
+		console.log(arguments);
+	})
+
+
+
+
+	connection.connect('/dev/ttyUSB0', {
+		bitrate: 115200
+	}, function(e, data) {
+		if(e)
+			return console.log(e.message);
+		console.log('connect-result',e,data);
+
+		
+		/*connection.write('M10\r\n', function() {
+			console.log('writeCall', arguments);
+		})* /
+		//connection.write('\x23\x54\x26\x08\x12\x03\x66');		
+	});
+*/
+
+});
+
+
+</script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 CTRL.DeviceConnectPanel = function(devInfo) {
 	CTRL.ReportView.call(this, 'Device '+devInfo.path);
-    this.defaultSpeeds = [115200,57600,38400,19200,14400,9600,4800,2400,1200,300,110];	
+    this.defaultSpeeds = [115200,57600,38400,19200,14400,9600,4800,2400,1200,300,110];
 	this._render();
 }
 CTRL.DeviceConnectPanel.Events = {
@@ -18,6 +18,14 @@ CTRL.DeviceConnectPanel.prototype = {
         return ret;
     },
 
+    _createEditableSelect: function(name, values, owner) {
+        owner.removeChildren();
+        var editableSelect = new CTRL.EditableSelect(owner);
+        editableSelect.setValues(values);
+        editableSelect.input.type = 'number';
+        return editableSelect.input;
+    },
+
 	update: function(devInfo)
 	{
         var conInfo = devInfo.connectionInfo;
@@ -26,7 +34,7 @@ CTRL.DeviceConnectPanel.prototype = {
 
             var cfgFields = {};
 
-            cfgFields.bitrate = this._createSelect('bitrate', this.defaultSpeeds, this.getSection('Main').fieldValue('bitrate'));
+            cfgFields.bitrate = this._createEditableSelect('bitrate', this.defaultSpeeds, this.getSection('Main').fieldValue('bitrate'));
             var extSection = this.getSection('Extended');
             cfgFields.dataBits = this._createSelect('dataBits', ['eight', 'seven'], extSection.fieldValue('DataBits'));
             cfgFields.parityBit = this._createSelect('parityBit', ['no', 'odd', 'even'], extSection.fieldValue('ParityBit'));
@@ -36,6 +44,15 @@ CTRL.DeviceConnectPanel.prototype = {
 
             var textBtn = this.getSection().element.lastChild;
             textBtn.textContent = 'Connect';
+
+
+            if(this.lastCfg) {
+                cfgFields.bitrate.value = this.lastCfg.bitrate;
+                cfgFields.dataBits.value = this.lastCfg.dataBits;
+                cfgFields.parityBit.value = this.lastCfg.parityBit;
+                cfgFields.stopBits.value = this.lastCfg.stopBits;
+                cfgFields.flowControl.checked = this.lastCfg.ctsFlowControl;
+            }
 
             this.cfgFields = cfgFields;
         } else {
@@ -54,13 +71,15 @@ CTRL.DeviceConnectPanel.prototype = {
 	getConfig: function()
 	{
 		var cfg = this.cfgFields;
-		return {
-            bitrate: parseInt(cfg.bitrate.value),
-            dataBits: cfg.dataBits.value,
-            parityBit: cfg.parityBit.value,
-            stopBits: cfg.stopBits.value,
-            ctsFlowControl: cfg.flowControl.checked
-        }		
+            retCfg = {
+                bitrate: parseInt(cfg.bitrate.value),
+                dataBits: cfg.dataBits.value,
+                parityBit: cfg.parityBit.value,
+                stopBits: cfg.stopBits.value,
+                ctsFlowControl: cfg.flowControl.checked
+            }
+        this.lastCfg = JSON.parse(JSON.stringify(retCfg));
+        return retCfg;
 	},
 
 	_render: function()

@@ -25,7 +25,8 @@
         "TextPrompt.js",
         "SuggestBox.js",
         "KeyboardShortcut.js",
-        "HelpScreen.js"
+        "HelpScreen.js",
+        "EditableSelect.js"
     ],
     "resources": [
         "common.css",
@@ -40,6 +41,7 @@
         "textPrompt.css",
         "suggestBox.css",
         "helpScreen.css",
-        "checkboxTextLabel.css"
+        "checkboxTextLabel.css",
+        "editableSelect.css"
     ]
 }

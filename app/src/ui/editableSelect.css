@@ -1,0 +1,21 @@
+/*empty*/
+
+
+select {
+    width: 200px;
+    float: left;
+}
+input {
+    float: left;
+    width: 180px;
+    margin-left: -198px;
+    margin-top: 1px;
+    border: none;
+    border-right: solid 1px rgb(221, 221, 221);
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
