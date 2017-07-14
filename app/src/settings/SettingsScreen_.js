@@ -256,7 +256,6 @@ CTRL.SettingsScreen.prototype = {
      */
     isClosingKey: function(keyCode)
     {
-        return false; //TODO
         return [
             CTRL.KeyboardShortcut.Keys.Enter.code,
             CTRL.KeyboardShortcut.Keys.Esc.code,
