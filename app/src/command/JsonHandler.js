@@ -60,14 +60,14 @@ CTRL.JsonHandler.prototype = {
 			sendToSockets(conId, JSON.stringify([0, CTRL.JsonHandler.Command.OnDisconnect, {
 				connectionId: conId,
 				reason: ev.data.reason
-			}]));			
-			delete that.FdToSocket[ conId ];			
+			}]));
+			delete that.FdToSocket[ conId ];
 		})
 
 	  	CTRL.Serial.addEventListener('receiveError', function(ev){
 	  		var errorInfo = ev.data;
 	  		console.log(errorInfo);
-	  	});		
+	  	});
 	},
 
 	//Interface
@@ -78,14 +78,21 @@ CTRL.JsonHandler.prototype = {
 			socket = req.accept();
 		socket.openFd = [];
 		socket.addEventListener('close', function() {
-			//todo
-			//close all open connections ??
-
 			//remove from list
 			var idx = that.openSockets.indexOf(socket);
 			if(idx === -1)
 				return;
 			that.openSockets.splice(idx, 1);
+
+			socket.openFd.forEach(function(fd){
+				var socketList = that.FdToSocket[fd],
+					idx = (socketList||[]).indexOf(socket);
+				if(idx !== -1) {
+					
+					socketList.splice(idx, 1);
+				}
+			})
+			return true;
 		})
 
 		socket.addEventListener('message', function(ev) {
@@ -141,7 +148,7 @@ CTRL.JsonHandler.prototype = {
 	{
 		return new Promise(function(fulfill, reject){
 			CTRL.Serial.getDevices(fulfill);
-		})	
+		})
 	},
 
 	executeConnect: function(socket, path, params)
@@ -172,7 +179,24 @@ CTRL.JsonHandler.prototype = {
 				fulfill(connectionInfo);
 			})
 		})
+	},
+
+	executeWrite: function(socket, connectionId, data) {
+		return new Promise(function(fulfill, reject) {
+
+			CTRL.Serial.send(connectionId, data, function(sendInfo) {
+				fulfill(sendInfo);
+			})
+
+		})
+	},
+
+	executeDisconnect: function(socket, connectionId) {
+		return new Promise(function(fulfill, reject){
+			CTRL.Serial.disconnect(connectionId, fulfill);
+		})
 	}
+
 
 }
 
@@ -348,12 +372,6 @@ dp.executeConnect = function(path, params, socket) {
 	})
 }
 
-dp.executeDisconnect = function(connectionId, socket) {
-	return Guaranty()
-	.then(function(val, resolve, reject){
-		ExtSerial.disconnect(connectionId, resolve);
-	})
-}
 
 dp.executeWrite = function(connectionId, data, socket) {
 	console.log('#write', data);
