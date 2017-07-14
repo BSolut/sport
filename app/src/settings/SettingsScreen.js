@@ -136,7 +136,7 @@ CTRL.GenericSettingsTab = function()
     for (var sectionName of explicitSectionOrder)
         this._sectionElement(sectionName);
     self.runtime.extensions("setting").forEach(this._addSetting.bind(this));
-    //TODO ?? self.runtime.extensions(WebInspector.SettingUI).forEach(this._addSettingUI.bind(this));
+    self.runtime.extensions(CTRL.SettingUI).forEach(this._addSettingUI.bind(this));
 }
 
 CTRL.GenericSettingsTab.isSettingVisible = function(extension)
@@ -220,9 +220,7 @@ CTRL.GenericSettingsTab.prototype = {
         }
         this._nameToSettingElement.set(settingName, settingControl);
         (parentFieldset || sectionElement).appendChild((settingControl));
-    }    
-
-/*
+    },
 
     _addSettingUI: function(extension)
     {
@@ -237,8 +235,7 @@ CTRL.GenericSettingsTab.prototype = {
             if (element)
                 this._sectionElement(sectionName).appendChild(element);
         }
-    },*/
-
+    }
 }
 
 
