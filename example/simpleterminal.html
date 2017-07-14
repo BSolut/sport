@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <script type='text/javascript' src='../lib/clientserial.js'></script>
+</head>
+<body>
+
+<script type="text/javascript">
+var siface = new Serial.Interface();
+console.log('Connect to serial server');
+siface.connectToServer(function(err) {
+	if(err)
+		return console.error(err);
+
+	console.log('Connect to serial /dev/ttyUSB0');
+	siface.connect('/dev/ttyUSB0', {
+		bitrate: 115200
+	}, function(err, sCon){
+		if(err)
+			return console.error(err);
+		console.log('Connected');
+
+		sCon.addEventListener('disconnect', function(ev){
+			console.log('Disconnected from serial');
+		})
+
+		var first = true;
+		sCon.addEventListener('receive', function(ev){
+			console.log( String.fromCharCode.apply(String, ev.data));
+
+			if(first) {
+				first = false;
+				sCon.disconnect();
+			}
+		})
+	})
+})
+
+</script>

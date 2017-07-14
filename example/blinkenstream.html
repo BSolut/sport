@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <script type='text/javascript' src='../lib/clientserial.js'></script>
+</head>
+<body>
+
+
+<script type="text/javascript">
+
+var siface = new Serial.Interface(),
+	connection;
+siface.connectToServer(function(e, server) {
+	console.log('Connected server version ', siface.serverVersion);
+
+
+	siface.connect('/dev/ttyUSB0', {
+		bitrate: 115200
+	}, function(err, sCon){
+		if(err)
+			return console.error(err);
+		var connected = true;
+
+		sCon.addEventListener('disconnect', function(ev){
+			connected = false;
+			console.log('###disconnect', ev);
+		})
+
+		sCon.addEventListener('receive', function(ev){
+			var str = String.fromCharCode.apply(null, ev.data);
+			//console.log(str);
+		})
+
+
+
+		var start = 0x07,
+			dir = 0x010;
+
+		function newAdd(val, add, channel) {
+			if(val === 0x000)
+				return 0x100;
+			if(val === 0x700)
+				return channel === 1 ? -0x100 : 0x010;
+			if(val === 0x770)
+				return -0x100;
+			if(val === 0x070)
+				return channel === 2 ? -0x010 : 0x001;
+			if(val === 0x077)
+				return -0x010;
+			if(val === 0x007)
+				return 0x100;
+			if(val === 0x707)
+				return -0x001;
+			return add;
+		}
+
+		function sendFrame() {
+			var frame = [
+				0x23, 0x54, 0x26, 0x66, //Magic
+				0x00, 0x08, 0x00, 0x12, //Height Width
+				0x00, 0x03, 0x00, 0x07  //Channel; MaxVal
+			];
+
+			var row = start,
+				row_dir = dir;
+			for(var y = 0; y < 0x08; y++) {
+				var pixel = row,
+					pixel_dir = row_dir;
+				for(var x = 0; x < 0x12; x++) {
+					frame.push.apply(frame, [ (pixel >> 8), (pixel >> 4) & 0x07, pixel & 0x07 ]);
+
+					pixel += pixel_dir;
+					pixel_dir = newAdd(pixel, pixel_dir, 3);
+				}
+				row += row_dir;
+				row_dir = newAdd(row, row_dir, 3);
+			}
+			start += dir;
+			dir = newAdd(start, dir, 3)
+
+			sCon.write(frame);
+
+			if(connected)
+				setTimeout(sendFrame, 50)
+		};
+
+		sendFrame();
+
+	})
+
+});
+
+
+</script>
+</body>
+</html>

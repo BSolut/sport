@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <script type='text/javascript' src='../lib/clientserial.js'></script>
+<style>
+* {margin:  0; padding: 0}
+
+.clearfix:after {
+    content: ".";
+    clear: both;
+    display: block;
+    visibility: hidden;
+    height: 0px;
+}
+
+
+#main-wrapper {
+    padding-top: 10px;
+}
+
+.palette {
+    float: left;
+    margin-left: 10px;
+    margin-top: 20px;
+    margin-right: 15px;
+}
+.palette .colors {
+    width: 41px;
+    border: solid 1px #000;
+    border-bottom: none;
+}
+.palette .pal {
+    float: left;
+    width: 20px;
+    height: 20px;
+    border-bottom: solid 1px #000;
+}
+.palette .pal:nth-child(odd) {
+    border-right: solid 1px #000;
+}
+#current-color {
+    margin-top: 10px;
+    background-color: #fff;
+    width: 41px;
+    height: 41px;
+    border: solid 1px #000;
+}
+#current-color input[type="color"] {
+    opacity: 0;
+    display: block;
+    width: 32px;
+    height: 32px;
+    border: none;
+}
+
+</style>
+</head>
+<body>
+
+<div id="main-wrapper" class="clearfix">
+    <div class="palette">
+        <div id="palett-colors" class="colors clearfix">
+            <div class="pal" style="background-color:#000000"></div>
+            <div class="pal" style="background-color:#ffffff"></div>
+            <div class="pal" style="background-color:#9d9d9d"></div>
+            <div class="pal" style="background-color:#be2633"></div>
+            <div class="pal" style="background-color:#e06f8b"></div>
+            <div class="pal" style="background-color:#493c2b"></div>
+            <div class="pal" style="background-color:#a46422"></div>
+            <div class="pal" style="background-color:#eb8931"></div>
+            <div class="pal" style="background-color:#f7e26b"></div>
+            <div class="pal" style="background-color:#2f484e"></div>
+            <div class="pal" style="background-color:#44891a"></div>
+            <div class="pal" style="background-color:#a3ce27"></div>
+            <div class="pal" style="background-color:#1b2632"></div>
+            <div class="pal" style="background-color:#005784"></div>
+            <div class="pal" style="background-color:#31a2f2"></div>
+            <div class="pal" style="background-color:#b2dcef"></div>
+        </div>
+        <div id="current-color">
+            <input type="color" value="#ffffff" id="color-picker">
+        </div>
+    </div>
+    <div id="draw-wrapper">
+        <canvas id="drawer"></canvas>
+        <div id="status"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+function elm(n) { return document.getElementById(n) };
+
+function hex(val) {
+    val = parseInt(val);
+    if(isNaN(val)) return '00';
+    val = val.toString(16);
+    return ((val.length === 1) ? '0' : '')+val;
+}
+function rgb2hex(rgb) {
+    rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+    return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+}
+
+const
+    PIXEL_W = 18,
+    PIXEL_H = 18*1.5;
+
+function BlinkerPainter(w,h,canvas) {
+    this.currentColor = '#fff';
+    this.width = w;
+    this.height = h;
+    this.data = new Array(w*h);
+    for(var i=0,l=w*h;i<l;i++)
+        this.data[i] = '#000000';
+
+    this.canvas = canvas;
+    var ctx = this.ctx = canvas.getContext('2d');
+
+    this.canvas.width = w * PIXEL_W + w + 2;
+    this.canvas.height = h * PIXEL_H + h + 2;
+
+    //Clear paint
+    ctx.strokeStyle="#999";
+    ctx.fillStyle="#ddd";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.rect(0,0,canvas.width,canvas.height);
+    ctx.stroke();
+
+    this.drawAll();
+
+    var that = this;
+    this.canvas.addEventListener('click', function(ev) {
+        var targetX = (ev.offsetX / (PIXEL_W+1)) | 0,
+            targetY = (ev.offsetY / (PIXEL_H+1)) | 0;
+        that.setPixel(targetX, targetY, that.currentColor);
+    })
+}
+var dp = BlinkerPainter.prototype;
+
+dp.drawPixel = function(x,y) {
+    var ctx = this.ctx;
+    ctx.strokeStyle='none';
+    ctx.fillStyle=this.data[ y*this.width+x];
+    ctx.fillRect(x+x*PIXEL_W+1,y+y*PIXEL_H+1,PIXEL_W,PIXEL_H);
+}
+
+dp.drawAll = function() {
+    for(var x=0;x<this.width;x++)
+        for(var y=0;y<this.height;y++)
+            this.drawPixel(x,y);
+}
+
+dp.setPixel = function(x,y,clr) {
+    this.data[ y*this.width + x ] = clr;
+    this.drawPixel(x, y);
+    this.sendFrame();
+}
+
+dp.setSerial = function(serial) {
+    this.serial = serial;
+    if(!serial) return;
+    this.sendFrame();
+}
+
+
+dp.convertColor = function(clr, max) {
+    clr = parseInt(clr.substr(1),16);
+    if(isNaN(clr))
+        return [0,0,0];
+    return [
+        ((clr >> 16) & 0xff) / (255/max) | 0,
+        ((clr >>  8) & 0xff) / (255/max) | 0,
+        ((clr >>  0) & 0xff) / (255/max) | 0
+    ]
+}
+
+dp.sendFrame = function() {
+    var frame = [
+        0x23, 0x54, 0x26, 0x66, //Magic
+        0x00, this.height, 0x00, this.width, //Height Width
+        0x00, 0x03, 0x00, 0x0f  //Channel; MaxVal
+    ];
+    for(var i=0,l=this.data.length;i<l;i++)
+        frame.push.apply(frame, this.convertColor(this.data[i], 0x0f) );
+    this.serial.write(frame);
+}
+
+
+
+//Status
+var statusElm = elm('status');
+function setStatus(txt, clr) {
+    statusElm.innerHTML = txt;
+    if(clr === 0 || clr === undefined)
+        statusElm.style.color = '#666';
+    else
+    if(clr === 1)
+        statusElm.style.color = '#a3ce27'
+    else
+    if(clr === 2)
+        statusElm.style.color = '#a94442'
+    else
+        statusElm.style.color = clr;
+}
+
+var painter = new BlinkerPainter(0x12, 0x08, elm('drawer'));
+//Color Picking
+var currColor = elm('current-color'),
+    colorPicker = elm('color-picker');
+colorPicker.addEventListener('change', function() {
+    painter.currentColor = currColor.style.backgroundColor = colorPicker.value;
+})
+elm('palett-colors').addEventListener('click', function(ev) {
+    if(ev.target.className !== 'pal') return;
+    painter.currentColor = currColor.style.backgroundColor = colorPicker.value = rgb2hex(ev.target.style.backgroundColor);
+})
+
+
+
+var siface = new Serial.Interface();
+setStatus('Connect to serial server');
+siface.connectToServer(function(e, server) {
+    setStatus('Connected server version ' + siface.serverVersion);
+
+    siface.connect('/dev/ttyUSB0', {
+        bitrate: 115200
+    }, function(err, sCon){
+        if(err)
+            return setStatus('Error connect to blinken tictac', 2);;
+        setStatus('Connected to blinken tictac', 1);
+        sCon.addEventListener('disconnect', function(ev){
+            setStatus('Lost connection to blinken tictac', 2);
+            painter.setSerial(false);
+        })
+        painter.setSerial(sCon);
+    })
+})
+</script>
