@@ -339,10 +339,12 @@ CTRL.SuggestBox.prototype = {
      */
     keyPressed: function(event)
     {
-        switch (event.keyIdentifier) {
+        switch (event.key) {
         case "Up":
+        case "ArrowUp":
             return this.upKeyPressed();
         case "Down":
+        case "ArrowDown":
             return this.downKeyPressed();
         case "PageUp":
             return this.pageUpKeyPressed();
