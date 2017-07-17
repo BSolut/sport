@@ -1,7 +1,7 @@
 {
     "ext_description": {
         "description": "Description of the extension.",
-        "message": "A serial port monitor as Chrome App, exposing an integrated JSON websocket that enables direct connection with a serial port from any web application. This enables and allows websites to communicate with your local serial device, such as Arduino or ESP32/ESP8266 to name two random examples."
+        "message": "A serial port monitor as Chrome App"
     },
     "ext_name": {
         "description": "Name of the extension.",
