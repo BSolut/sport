@@ -277,10 +277,12 @@ CTRL.TextPrompt.prototype = {
         case "Tab":
             handled = this.tabKeyPressed(event);
             break;
+        case "ArrowLeft":
         case "Left":
         case "Home":
             this._removeSuggestionAids();
             break;
+        case "ArrowRight":
         case "Right":
         case "End":
             if (this.isCaretAtEndOfPrompt())
@@ -295,6 +297,7 @@ CTRL.TextPrompt.prototype = {
                 handled = true;
             }
             break;
+        case " ":
         case "U+0020": // Space
         case "Space":
             if (event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey) {
