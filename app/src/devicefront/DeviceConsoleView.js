@@ -33,17 +33,15 @@ CTRL.DeviceConsoleView = function() {
     var proxyElement = this._prompt.attach(this._promptElement);
     proxyElement.addEventListener("keydown", this._promptKeyDown.bind(this), false);
 
-    /*
-    TODO !!!
-    this._consoleHistorySetting = CNC.settings.createLocalSetting("consoleHistory", []);
-    var historyData = this._consoleHistorySetting.get();
-    this._prompt.setHistoryData(historyData);*/
+    this._consoleHistorySetting = CTRL.settings.createSetting('consoleHistory', []);
+    var historyData = this._consoleHistorySetting.get()
+    this._prompt.setHistoryData( historyData );
 
     this.receiveMsgBuffer = "";
     this._viewMessageSymbol = Symbol("viewMessage");
     this._messages = [];
 }
-
+CTRL.DeviceConsoleView.persistedHistorySize = 300;
 CTRL.DeviceConsoleView.MessageType = {
     Receive: 1,
     Send: 2,
@@ -112,54 +110,21 @@ CTRL.DeviceConsoleView.prototype = {
 
     _completionsForTextPromptInCurrentContext: function(proxyElement, wordRange, force, completionsReadyCallback)
     {
-        completionsReadyCallback([])
-        return;
-        completionsReadyCallback([
-            "TestFubar",
-            "test",
-            "Bla"
-        ])
+        var d = this._prompt.historyData(),
+            startWith = proxyElement.innerText.toLowerCase();
+        if(!startWith)
+            return completionsReadyCallback([]);
+        var ret = [];
+        for(var i=0,l=d.length;i<l;i++) {
+            if((d[i]||'').toLowerCase().indexOf(startWith)===0)
+                ret.push(d[i]);
+        }
+        completionsReadyCallback(ret)
     },
 
     _registerShortcuts: function()
     {
         this._shortcuts = {};
-
-/* TODO ??
-        var shortcut = CTRL.KeyboardShortcut;
-        //var section = CTRL.shortcutsScreen.section(CTRL.UIString("Console"));
-
-        var shortcutL = shortcut.makeDescriptor("l", CTRL.KeyboardShortcut.Modifiers.Ctrl);
-        var keys = [shortcutL];
-        if (CTRL.isMac()) {
-            var shortcutK = shortcut.makeDescriptor("k", CTRL.KeyboardShortcut.Modifiers.Meta);
-            keys.unshift(shortcutK);
-        }
-        section.addAlternateKeys(keys, CTRL.UIString("Clear console"));
-
-        section.addKey(shortcut.makeDescriptor(shortcut.Keys.Tab), CTRL.UIString("Autocomplete common prefix"));
-        section.addKey(shortcut.makeDescriptor(shortcut.Keys.Right), CTRL.UIString("Accept suggestion"));
-
-        var shortcutU = shortcut.makeDescriptor("u", CTRL.KeyboardShortcut.Modifiers.Ctrl);
-        this._shortcuts[shortcutU.key] = this._clearPromptBackwards.bind(this);
-        section.addAlternateKeys([shortcutU], CTRL.UIString("Clear console prompt"));
-
-        keys = [
-            shortcut.makeDescriptor(shortcut.Keys.Down),
-            shortcut.makeDescriptor(shortcut.Keys.Up)
-        ];
-        section.addRelatedKeys(keys, CTRL.UIString("Next/previous line"));
-
-        if (CTRL.isMac()) {
-            keys = [
-                shortcut.makeDescriptor("N", shortcut.Modifiers.Alt),
-                shortcut.makeDescriptor("P", shortcut.Modifiers.Alt)
-            ];
-            section.addRelatedKeys(keys, CTRL.UIString("Next/previous command"));
-        }
-
-        section.addKey(shortcut.makeDescriptor(shortcut.Keys.Enter), CTRL.UIString("Execute command"));
-*/
     },
 
     _promptKeyDown: function(event)
@@ -192,9 +157,9 @@ CTRL.DeviceConsoleView.prototype = {
     {
         this._prompt.setText("");
         this._prompt.pushHistoryItem(text);
+        this._consoleHistorySetting.set(this._prompt.historyData().slice(-CTRL.DeviceConsoleView.persistedHistorySize));
 
-        var endline = this._sendModeComboBox.selectElement().value;
-        console.log('Execute', text,endline);
+        var endline = this._sendModeComboBox.selectElement().value;       
         if(endline === "3")
             text += '\r\n';
         else if(endline === "2")
@@ -203,9 +168,6 @@ CTRL.DeviceConsoleView.prototype = {
             text += '\r';
 
         this.dispatchEventToListeners(CTRL.DeviceConsoleView.Events.Send, text);
-
-        //this.addMessage(text, CTRL.DeviceConsoleView.MessageType.Receive);
-        //CNC.console.addMessage(text, CNC.Console.MessageLevel.Log, CNC.Console.MessageType.Result);
     },
 
 

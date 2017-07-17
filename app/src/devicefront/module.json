@@ -14,6 +14,11 @@
                 ["No line ending", 0, true]
             ]
         }
+        ,{
+            "type": "setting",
+            "settingName": "consoleHistory",
+            "defaultValue": []
+        }
     ],
     "dependencies": [
         "common",
