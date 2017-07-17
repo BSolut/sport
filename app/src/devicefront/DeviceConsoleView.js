@@ -116,8 +116,10 @@ CTRL.DeviceConsoleView.prototype = {
             return completionsReadyCallback([]);
         var ret = [];
         for(var i=0,l=d.length;i<l;i++) {
-            if((d[i]||'').toLowerCase().indexOf(startWith)===0)
-                ret.push(d[i]);
+            if((d[i]||'').toLowerCase().indexOf(startWith)===0) {
+                if(ret.indexOf(d[i]) === -1)
+                    ret.push(d[i]);
+            }
         }
         completionsReadyCallback(ret)
     },
@@ -290,23 +292,6 @@ CTRL.DeviceConsoleView.prototype = {
                     this.addMessage(partMsg, CTRL.DeviceConsoleView.MessageType.Receive);
             }
         }
-
-        /*
-        var lbR = msg.indexOf('\r'),
-            lbN = msg.indexOf('\n'),
-            containsLineBreak =
-
-        if(this.receiveOpenMsg) {
-
-        }
-
-        var containsLineBreak = msg.indexOf('\r') != -1 || msg.indexOf('\n') != -1,
-            curMsgView = this.addMessage(msg, CTRL.DeviceConsoleView.MessageType.Receive);
-        if(!containsLineBreak)
-            this.receiveOpenMsg = curMsgView;
-        else
-            delete this.receiveOpenMsg;
-        */
     },
 
     addSendMessage: function(rawMessage)
@@ -329,7 +314,7 @@ CTRL.DeviceConsoleView.prototype = {
     {
         var viewMessage = this._createViewMessage(message, type, format);
         message[ this._viewMessageSymbol ] = viewMessage;
-        this._messages.push(viewMessage); //TODO auto shift out old messages ?
+        this._messages.push(viewMessage);
         this._scheduleViewportRefresh();
         return viewMessage;
     },
