@@ -151,7 +151,6 @@ CTRL.Serial = (function() {
 					bytesSent: The number of bytes sent.
 					error: "disconnected", "pending", "timeout", or "system_error"
 				}*/
-				console.log('#sendInfo', sendInfo);
 				callback(sendInfo);
 			});
 		},
