@@ -37,11 +37,31 @@ CTRL.Background.prototype = {
 		this.loadHandler().then(this.startServer.bind(this));
 	},
 
-	onSettingChanged: function(cData) {
-		if(!(cData.name !== 'srvPort' || cData.name === 'srvDisabled'))
-			return;
-		//todo check we have something to do
-		console.log('check server is right state')
+	onSettingChanged: function(ev) {
+		var cData = ev.data;
+		if(cData.name !== 'srvPort' && cData.name !== 'srvDisabled')
+			return;		
+		if(cData.name === 'srvPort') {
+			if(cData.value != this.httpSrv.port) {
+				console.log('#Change port')
+				this.httpSrv.disconnect();
+				this.httpSrv.listen( cData.value );
+			}
+		} else
+		if(cData.name === 'srvDisabled') {
+			if(!cData.value && !this.httpSrv)
+				this.startServer()
+			else
+			if(cData.value && this.httpSrv) 
+				this.stopServer();
+		}
+	},
+
+	stopServer: function() {
+		console.log('Stop listen');
+		this.httpSrv.close();
+		delete this.httpSrv;
+		delete this.wsSrv;
 	},
 
 	startServer: function() {

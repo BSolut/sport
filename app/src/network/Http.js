@@ -328,6 +328,21 @@ function HttpServer() {
 HttpServer.prototype = {
   __proto__: EventSource.prototype,
 
+
+  disconnect: function() {
+    if(!this.socketInfo || this.readyState_ !== 1)
+      return;
+    chrome.sockets.tcpServer.disconnect(this.socketInfo.socketId, function(){
+      console.log('disconnect callback', arguments);
+    })
+  },
+
+  close : function() {
+    chrome.sockets.tcpServer.disconnect(this.socketInfo.socketId, function(){
+      console.log('close callback', arguments);
+    })
+  },
+
   /**
    * Listen for connections on |port| using the interface |host|.
    * @param {number} port The port to listen for incoming connections on.
@@ -338,6 +353,7 @@ HttpServer.prototype = {
   listen: function(port, opt_host) {
     var t = this;
     chrome.sockets.tcpServer.create(function(socketInfo) {
+      t.socketInfo = socketInfo;
       chrome.sockets.tcpServer.onAccept.addListener(function(acceptInfo) {
         if (acceptInfo.socketId === socketInfo.socketId)
           t.readRequestFromSocket_(new PSocket(acceptInfo.clientSocketId));
@@ -350,6 +366,7 @@ HttpServer.prototype = {
         50,
         function(result) {
           if (!result) {
+            t.port = port;
             t.readyState_ = 1;
           }
           else {
