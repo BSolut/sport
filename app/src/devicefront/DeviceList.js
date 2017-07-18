@@ -96,15 +96,13 @@ CTRL.DeviceListPane.prototype = {
     refresh: function()
     {
         return CTRL.Serial.getDevices(this.update.bind(this));
-
+        
         this.update([{
             displayName: "USB2.0-Serial",
             path: "/dev/ttyUSB0-Magic",
             productId: 29987,
             vendorId:6790,
-            connectionInfo: {
-                connectionId: 2
-            }
+            connectionInfo: undefined
         }])
     },
 

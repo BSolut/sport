@@ -46,6 +46,13 @@ CTRL.DeviceView.prototype = {
             devInfo.connectionInfo = ev.data.connectionInfo;
             that._onDeviceConnected();
         })
+        CTRL.Serial.addEventListener('afterConnect', function(ev){
+            if(ev.data.path !== devInfo.path)
+                return;
+            if(!ev.data.connectionInfo)
+                that._onDeviceConnectError();
+        })
+
         CTRL.Serial.addEventListener('disconnected', function(ev){
             if(ev.data.path !== devInfo.path)
                 return;
@@ -98,6 +105,12 @@ CTRL.DeviceView.prototype = {
     {
         if(!this.isConnected()){
             var cfg = this._getConnectInfoPanel().getConfig();
+            this._tabbedPane.selectTab('str');
+            this._consoleView.addMessage({
+                text: 'Try to connect to '+this.devInfo.path,
+                level: 'info'
+            }, CTRL.DeviceConsoleView.MessageType.Log);
+
             CTRL.Serial.connect(this.devInfo.path, cfg);
         } else {
             CTRL.Serial.disconnect(this.devInfo.connectionInfo.connectionId);
@@ -107,8 +120,12 @@ CTRL.DeviceView.prototype = {
     _onDeviceConnected: function()
     {
         this._updateConnectionInfo();
-        this._consoleView.onDeviceConnected(this.devInfo);
-        this._tabbedPane.selectTab('str');
+        this._consoleView.onDeviceConnected(this.devInfo);        
+    },
+
+    _onDeviceConnectError: function()
+    {
+        this._consoleView.onDeviceConnectError();
     },
 
     _onDeviceDisconnected: function(reason)

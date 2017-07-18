@@ -40,6 +40,8 @@ CTRL.DeviceConsoleView = function() {
     this.receiveMsgBuffer = "";
     this._viewMessageSymbol = Symbol("viewMessage");
     this._messages = [];
+
+    this.updateConnectionButton();
 }
 CTRL.DeviceConsoleView.persistedHistorySize = 300;
 CTRL.DeviceConsoleView.MessageType = {
@@ -349,6 +351,13 @@ CTRL.DeviceConsoleView.prototype = {
             level: 'info'
         }, CTRL.DeviceConsoleView.MessageType.Log);
         this.updateConnectionButton();
+    },
+
+    onDeviceConnectError: function() {
+        this.addMessage({
+            text: 'Error on connect',
+            level: 'error'
+        }, CTRL.DeviceConsoleView.MessageType.Log);
     },
 
     onDeviceDisconnected: function(reason) {

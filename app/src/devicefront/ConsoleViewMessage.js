@@ -104,20 +104,6 @@ CTRL.ConsoleViewMessage.prototype = {
         this._wrapperElement.removeChildren();
         this._wrapperElement.message = this;
 
-        /*
-        switch (this._message.level) {
-            case CNC.Console.MessageLevel.Log:
-                this._wrapperElement.classList.add("console-log-level");
-                //this._wrapperElement.classList.add("console-debug-level");
-                break;
-            case CNC.Console.MessageLevel.Warning:
-                this._wrapperElement.classList.add("console-warning-level");
-                break;
-            case CNC.Console.MessageLevel.Error:
-                this._wrapperElement.classList.add("console-error-level");
-                break;
-        }*/
-
         var ctnElm = this.contentElement();
         if(this._message.confirmed)
             ctnElm.classList.add('confirmed');
@@ -151,7 +137,6 @@ CTRL.ConsoleViewMessage.prototype = {
     _formatMessage: function()
     {
         this._formattedMessage = createElement("span");
-        //this._formattedMessage.appendChild(CNC.Widget.createStyleElement("components/objectValue.css"));
         this._formattedMessage.className = "console-message-text source-code";
 
 
@@ -170,8 +155,6 @@ CTRL.ConsoleViewMessage.prototype = {
         }
 
         this._formattedMessage.appendChild(this._messageElement);
-
-        return;
     },
 
     _formatAsHex: function(resultElm, msg)
@@ -272,7 +255,6 @@ CTRL.ConsoleMsgLog.prototype = {
     contentElement: function()
     {
         var element = CTRL.ConsoleViewMessage.prototype.contentElement.call(this);
-        //element.classList.add("console-info-level");
         return element;
     },
 
