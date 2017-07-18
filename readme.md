@@ -6,7 +6,7 @@ This enables and allows websites to communicate with your local serial device, s
 
 Per default the server is running on localhost:8889.
 
-![Connect](/screenshots/connect.png)
+![Connect](/example/connect.png)
 
-![Terminal](/screenshots/terminal.png)
+![Terminal](/example/terminal.png)
 
